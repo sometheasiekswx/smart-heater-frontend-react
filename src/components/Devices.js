@@ -52,7 +52,7 @@ function Devices() {
 
     return (
         <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-            <div className="flex items-center p-4 bg-blue-100 rounded-lg shadow-xs">
+            <div className="flex items-center p-4 bg-blue-100 rounded-lg shadow-sm">
                 <div className="p-3 mr-4 bg-blue-200 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
@@ -76,7 +76,7 @@ function Devices() {
                     </p>
                 </div>
             </div>
-            <div className="flex items-center p-4 bg-yellow-100 rounded-lg shadow-xs">
+            <div className="flex items-center p-4 bg-yellow-100 rounded-lg shadow-sm">
                 <div className="p-3 mr-4 bg-yellow-200 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +93,7 @@ function Devices() {
                     </p>
                 </div>
             </div>
-            <div className="flex items-center p-4 bg-pink-100 rounded-lg shadow-xs">
+            <div className="flex items-center p-4 bg-pink-100 rounded-lg shadow-sm">
                 <div className="p-3 mr-4 bg-pink-200 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">

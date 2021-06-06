@@ -2,6 +2,7 @@ import './App.css';
 
 import BodyContainer from "./components/BodyContainer";
 import Devices from "./components/Devices";
+import projectImage from './assets/IMG_3149.png';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                 </button>
             </h1>
             <Devices/>
+            <img src={projectImage} className="rounded-lg shadow-sm mt-4"/>
         </BodyContainer>
     );
 }
