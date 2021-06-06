@@ -1,2 +1,0 @@
-# smart-heater-frontend-react
- 

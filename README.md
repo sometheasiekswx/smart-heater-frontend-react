@@ -4,7 +4,9 @@
 
 First setup **smart-heater-api-flask** and take note of the IP address serving API
 
-Enter the IP address of smart-heater-api-flask into .env following .env.example structure
+Populate .env following .env.example structure:
+- Enter the IP address and port of smart-heater-api-flask
+- Enter the Key from the IFTTT Webhook site
 
 ```bash
 yarn install
