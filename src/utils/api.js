@@ -29,7 +29,6 @@ export const getTemperature = async () => {
         const data = (await sensorsApi.get('temperature')).data;
         return parseFloat(data);
     } catch (error) {
-        console.log(sensorsApi)
         console.log(error.message);
     }
 }

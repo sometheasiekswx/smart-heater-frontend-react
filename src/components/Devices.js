@@ -4,20 +4,12 @@ import {CronJob} from "cron";
 
 function Devices() {
     const [currentTemperature, setCurrentTemperature] = useState(0);
-    const [targetTemperature, setTargetTemperature] = useState(25);
-    const [targetTemperatureMargin] = useState(2);
+    const [targetTemperature, setTargetTemperature] = useState(10);
+    const [targetTemperatureMargin, setTargetTemperatureMargin] = useState(1);
     const [heaterOn, setHeaterOn] = useState(false);
     const handleTemperature = async () => {
         const temperature = await getTemperature();
         setCurrentTemperature(temperature);
-        console.log(currentTemperature, targetTemperature);
-        if (currentTemperature >= targetTemperature + targetTemperatureMargin && heaterOn) {
-            await turnOffHeater();
-            setHeaterOn(false);
-        } else if (currentTemperature <= targetTemperature - targetTemperatureMargin && !heaterOn) {
-            await turnOnHeater();
-            setHeaterOn(true);
-        }
     }
     const [jobTemperature] = useState(new CronJob("* * * * * *", handleTemperature()));
 
@@ -31,20 +23,46 @@ function Devices() {
             setNoMotion(0)
             setMotion(true);
         }
-
-        if (noMotion > 50) {
-            setMotion(false);
-        }
     }
     const [jobMotion] = useState(new CronJob("* * * * * *", handleMotion()));
 
     useEffect(() => {
         jobTemperature.start();
         jobMotion.start();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const isHighTemperatureAndMotion = () => {
+        if (((currentTemperature >= targetTemperature + targetTemperatureMargin) && heaterOn) && motion) {
+            return true;
+        }
+        return false;
+    }
+    const isLowTemperatureOrNoMotion = () => {
+        if (((currentTemperature <= targetTemperature - targetTemperatureMargin) && !heaterOn) || !motion) {
+            return true;
+        }
+        return false;
+    }
+    useEffect(async () => {
+        if (isHighTemperatureAndMotion()) {
+            await turnOffHeater();
+            setHeaterOn(false);
+        } else if (isLowTemperatureOrNoMotion()) {
+            await turnOnHeater();
+            setHeaterOn(true);
+        }
+    }, [currentTemperature, targetTemperature, targetTemperatureMargin])
+
+    useEffect(async () => {
+        if (noMotion > 600) { // 10 minutes in active
+            setMotion(false);
+            await turnOffHeater();
+            setHeaterOn(false);
+        }
+    }, [noMotion])
+
     process.on('SIGINT', function () {
-        console.log("Caught interrupt signal");
         jobTemperature.stop();
         jobMotion.stop();
         process.exit();
@@ -68,11 +86,36 @@ function Devices() {
                         Current: {currentTemperature}°C
                     </p>
                     <p className="text-lg font-semibold text-gray-700">
-                        Target: <button
-                        className="rounded-lg px-2 bg-blue-200"
-                        onClick={() => setTargetTemperature(targetTemperature - 1)}>-</button> {targetTemperature}°C <button
-                        className="rounded-lg px-2 bg-blue-200"
-                        onClick={() => setTargetTemperature(targetTemperature + 1)}>+</button>
+                        Target:
+                        <button
+                            className="rounded-lg px-2 bg-blue-200 mx-2"
+                            onClick={() => setTargetTemperature(targetTemperature - 1)}
+                        >
+                            -
+                        </button>
+                        {targetTemperature}°C
+                        <button
+                            className="rounded-lg px-2 bg-blue-200 mx-2"
+                            onClick={() => setTargetTemperature(targetTemperature + 1)}
+                        >
+                            +
+                        </button>
+                    </p>
+                    <p className="text-lg font-semibold text-gray-700">
+                        Margin:
+                        <button
+                            className="rounded-lg px-2 bg-blue-200 mx-2"
+                            onClick={() => setTargetTemperatureMargin(targetTemperatureMargin - 1)}
+                        >
+                            -
+                        </button>
+                        {targetTemperatureMargin}°C
+                        <button
+                            className="rounded-lg px-2 bg-blue-200 mx-2"
+                            onClick={() => setTargetTemperatureMargin(targetTemperatureMargin + 1)}
+                        >
+                            +
+                        </button>
                     </p>
                 </div>
             </div>
@@ -89,7 +132,7 @@ function Devices() {
                         Motion Sensor
                     </p>
                     <p className="text-lg font-semibold text-gray-700">
-                        Detected: {(motion === true ? "True" : "False")} ({noMotion})
+                        Detected: {(motion === true ? "True" : "False")}
                     </p>
                 </div>
             </div>
@@ -111,14 +154,20 @@ function Devices() {
                         Status: {(heaterOn === true ? "On" : "Off")}
                     </p>
                     <p className="text-lg font-semibold text-gray-700">
-                        Manual Control: <button
-                        className="rounded-lg px-2 bg-gray-200 pointer-events-none"
-                        onClick={() => {
-                        }}>On</button>
+                        Manual Control:
                         <button
-                            className="rounded-lg px-2 bg-gray-200 pointer-events-none"
+                            className="rounded-lg px-2 bg-gray-200 pointer-events-none ml-2"
                             onClick={() => {
-                            }}>Off
+                            }}
+                        >
+                            On
+                        </button>
+                        <button
+                            className="rounded-lg px-2 bg-gray-200 pointer-events-none ml-2"
+                            onClick={() => {
+                            }}
+                        >
+                            Off
                         </button>
                     </p>
                 </div>
